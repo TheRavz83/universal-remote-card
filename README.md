@@ -642,6 +642,39 @@ Once setup, you can reference these icons in custom elements in the icon field b
 
 While all configuration can now be done through the user interface, these YAML examples can provide some insight on layout basics.
 
+## Multiple Remotes Dropdown
+
+Set `remote_options` to show a dropdown at the top of the card. Each option can override the base card fields, including entity IDs, platform, title, custom actions, styles, and rows.
+
+```yaml
+type: custom:universal-remote-card
+title: Remote
+selected_remote: salon
+remote_options:
+  - name: salon
+    label: Salon
+    platform: Android TV
+    remote_id: remote.tv_salon
+    media_player_id: media_player.tv_salon
+    rows:
+      - - back
+        - power
+        - home
+      - - touchpad
+      - - volume_buttons
+  - name: chambre
+    label: Chambre
+    platform: Samsung TV
+    remote_id: remote.tv_chambre
+    media_player_id: media_player.tv_chambre
+    rows:
+      - - back
+        - power
+        - home
+      - - navigation_buttons
+      - - volume_buttons
+```
+
 ## Example 1
 
 Playing with order, moving and repeating buttons.

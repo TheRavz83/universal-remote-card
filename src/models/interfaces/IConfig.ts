@@ -7,6 +7,11 @@ export interface IIconConfig {
 	path: string;
 }
 
+export interface IRemoteOption extends Partial<IConfig> {
+	name: string;
+	label?: string;
+}
+
 export interface IConfig {
 	type?: string;
 	title?: string;
@@ -23,6 +28,8 @@ export interface IConfig {
 	custom_actions?: IElementConfig[];
 	custom_actions_file?: string;
 	custom_icons?: IIconConfig[];
+	remote_options?: IRemoteOption[];
+	selected_remote?: string;
 
 	styles?: string;
 	haptics?: boolean;

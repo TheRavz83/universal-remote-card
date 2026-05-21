@@ -52,6 +52,7 @@ console.info(
 class UniversalRemoteCard extends LitElement {
 	@property() hass!: HomeAssistant;
 	@property() config!: IConfig;
+	baseConfig!: IConfig;
 
 	DEFAULT_KEYS: IElementConfig[] = [];
 	DEFAULT_SOURCES: IElementConfig[] = [];
@@ -67,6 +68,7 @@ class UniversalRemoteCard extends LitElement {
 	rtl: boolean = false;
 
 	@state() loading: boolean = false;
+	@state() selectedRemote: string = '';
 	customActionsFile: string = '';
 	customActionsFromFile?: IElementConfig[];
 
@@ -97,7 +99,38 @@ class UniversalRemoteCard extends LitElement {
 		if (!config) {
 			throw Error('Invalid configuration');
 		}
-		this.config = config;
+		this.baseConfig = config;
+		const options = config.remote_options ?? [];
+		const selectedRemote =
+			this.selectedRemote || config.selected_remote || options[0]?.name || '';
+		this.selectedRemote = options.some((option) => option.name == selectedRemote)
+			? selectedRemote
+			: (options[0]?.name ?? '');
+		this.config = this.getActiveConfig();
+	}
+
+	getActiveConfig() {
+		const baseConfig = this.baseConfig ?? this.config;
+		const selectedOption = (baseConfig.remote_options ?? []).find(
+			(option) => option.name == this.selectedRemote,
+		);
+		if (!selectedOption) {
+			return baseConfig;
+		}
+		return {
+			...baseConfig,
+			...selectedOption,
+			type: baseConfig.type,
+			remote_options: baseConfig.remote_options,
+			selected_remote: this.selectedRemote,
+		};
+	}
+
+	handleRemoteChange(e: Event) {
+		this.selectedRemote = (e.target as HTMLSelectElement).value;
+		this.config = this.getActiveConfig();
+		this.platform = undefined;
+		this.requestUpdate();
 	}
 
 	updateElementConfig(element: IElementConfig) {
@@ -602,6 +635,31 @@ class UniversalRemoteCard extends LitElement {
 		return html`<ha-spinner size="large"></ha-spinner>`;
 	}
 
+	buildRemoteSelector() {
+		const options = this.baseConfig?.remote_options ?? [];
+		if (options.length < 2) {
+			return html``;
+		}
+
+		return html`
+			<div class="remote-selector">
+				<select
+					.value=${this.selectedRemote}
+					@change=${this.handleRemoteChange}
+					aria-label="Remote"
+				>
+					${options.map(
+						(option) => html`
+							<option value=${option.name}>
+								${option.label ?? capitalizeWords(option.name)}
+							</option>
+						`,
+					)}
+				</select>
+			</div>
+		`;
+	}
+
 	async fetchCustomActionsFromFile(filename?: string) {
 		if (filename) {
 			this.loading = true;
@@ -657,6 +715,7 @@ class UniversalRemoteCard extends LitElement {
 		if (!this.config || !this.hass) {
 			return html``;
 		}
+		this.config = this.getActiveConfig();
 
 		const context = this.getContext();
 		const content: TemplateResult[] = [];
@@ -674,7 +733,7 @@ class UniversalRemoteCard extends LitElement {
 		>
 			${this.loading
 				? this.buildSpinner()
-				: html`${content}${this.buildDialog()}${buildStyles(this.styles)}`}</ha-card
+				: html`${this.buildRemoteSelector()}${content}${this.buildDialog()}${buildStyles(this.styles)}`}</ha-card
 		>`;
 	}
 
@@ -704,7 +763,15 @@ class UniversalRemoteCard extends LitElement {
 	}
 
 	shouldUpdate(changedProperties: PropertyValues) {
-		if (changedProperties.has('hass')) {
+		if (
+			changedProperties.has('hass') ||
+			changedProperties.has('selectedRemote')
+		) {
+			const activeConfig = this.getActiveConfig();
+			if (JSON.stringify(this.config) != JSON.stringify(activeConfig)) {
+				this.config = activeConfig;
+			}
+
 			const context = this.getContext();
 
 			const platform = this.renderTemplate(
@@ -748,6 +815,7 @@ class UniversalRemoteCard extends LitElement {
 			(changedProperties.has('config') &&
 				JSON.stringify(this.config) !=
 					JSON.stringify(changedProperties.get('config'))) ||
+			changedProperties.has('selectedRemote') ||
 			changedProperties.has('loading') ||
 			changedProperties.size == 0
 		) {
@@ -828,6 +896,26 @@ class UniversalRemoteCard extends LitElement {
 
 				-webkit-tap-highlight-color: transparent;
 				-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+			}
+
+			.remote-selector {
+				align-self: stretch;
+				display: flex;
+				justify-content: center;
+				padding: 0 4px 8px;
+			}
+
+			.remote-selector select {
+				width: 100%;
+				max-width: 320px;
+				min-height: 40px;
+				box-sizing: border-box;
+				padding: 0 36px 0 12px;
+				border: 1px solid var(--divider-color, #e0e0e0);
+				border-radius: 6px;
+				background: var(--card-background-color, #fff);
+				color: var(--primary-text-color, #212121);
+				font: inherit;
 			}
 
 			.row,

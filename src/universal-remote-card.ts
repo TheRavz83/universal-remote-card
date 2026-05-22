@@ -641,21 +641,41 @@ class UniversalRemoteCard extends LitElement {
 			return html``;
 		}
 
+		const selectedOption = options.find(
+			(option) => option.name === this.selectedRemote,
+		);
+		const selectedLabel = selectedOption?.label ?? capitalizeWords(this.selectedRemote);
+
 		return html`
 			<div class="remote-selector">
-				<select
-					.value=${this.selectedRemote}
-					@change=${this.handleRemoteChange}
-					aria-label="Remote"
-				>
-					${options.map(
-						(option) => html`
-							<option value=${option.name}>
-								${option.label ?? capitalizeWords(option.name)}
-							</option>
-						`,
-					)}
-				</select>
+				<div class="remote-card">
+					<div class="remote-card-top">
+						<div class="remote-card-icon">
+							<ha-icon icon="mdi:remote"></ha-icon>
+						</div>
+						<div class="remote-card-text">
+							<span class="remote-card-title">Télécommande</span>
+							<span class="remote-card-current">${selectedLabel}</span>
+						</div>
+					</div>
+					<div class="remote-card-body">
+						<div class="select-wrap">
+							<select
+								.value=${this.selectedRemote}
+								@change=${this.handleRemoteChange}
+								aria-label="Remote"
+							>
+								${options.map(
+									(option) => html`
+										<option value=${option.name}>
+											${option.label ?? capitalizeWords(option.name)}
+										</option>
+									`,
+								)}
+							</select>
+						</div>
+					</div>
+				</div>
 			</div>
 		`;
 	}
@@ -902,20 +922,106 @@ class UniversalRemoteCard extends LitElement {
 				align-self: stretch;
 				display: flex;
 				justify-content: center;
-				padding: 0 4px 8px;
+				padding: 0 4px 12px;
+			}
+
+			.remote-card {
+				width: 100%;
+				max-width: 360px;
+				background: var(--secondary-background-color, #1f1f1f);
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				border-radius: 18px;
+				box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+				display: grid;
+				gap: 8px;
+				padding: 12px 14px;
+			}
+
+			.remote-card-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				gap: 10px;
+			}
+
+			.remote-card-title {
+				font-size: 0.8rem;
+				font-weight: 600;
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+				color: var(--secondary-text-color, #c7c7c7);
+			}
+
+			.remote-card-current {
+				font-size: 1rem;
+				font-weight: 700;
+				color: var(--primary-text-color, #fff);
+			}
+
+			.remote-card-body {
+				display: grid;
+				gap: 8px;
+			}
+
+			.remote-card-top {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+			}
+
+			.remote-card-icon {
+				width: 42px;
+				height: 42px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 14px;
+				background: rgba(255, 255, 255, 0.08);
+			}
+
+			.remote-card-icon ha-icon {
+				color: var(--primary-text-color, #fff);
+				width: 24px;
+				height: 24px;
+			}
+
+			.remote-card-text {
+				display: grid;
+				gap: 2px;
+			}
+
+			.select-wrap {
+				position: relative;
+			}
+
+			.select-wrap::after {
+				content: '▾';
+				position: absolute;
+				right: 14px;
+				top: 50%;
+				transform: translateY(-50%);
+				pointer-events: none;
+				color: var(--secondary-text-color, #c7c7c7);
+				font-size: 1rem;
 			}
 
 			.remote-selector select {
 				width: 100%;
-				max-width: 320px;
-				min-height: 40px;
+				min-height: 44px;
 				box-sizing: border-box;
-				padding: 0 36px 0 12px;
-				border: 1px solid var(--divider-color, #e0e0e0);
-				border-radius: 6px;
-				background: var(--card-background-color, #fff);
-				color: var(--primary-text-color, #212121);
+				padding: 0 40px 0 14px;
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				border-radius: 14px;
+				background: rgba(255, 255, 255, 0.05);
+				color: var(--primary-text-color, #fff);
 				font: inherit;
+				outline: none;
+				appearance: none;
+			}
+
+			.remote-selector select:focus {
+				border-color: rgba(255, 255, 255, 0.28);
+				box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
 			}
 
 			.row,

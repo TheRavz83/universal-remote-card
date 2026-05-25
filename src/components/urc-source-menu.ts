@@ -104,9 +104,12 @@ export class UrcSourceMenu extends LitElement {
       position: absolute;
       left: 0;
       top: calc(100% + 6px);
-      min-width: 100%;
+      min-width: max-content;
       width: auto;
       max-width: 320px;
+      display: grid;
+      grid-auto-rows: min-content;
+      gap: 4px;
       background: var(--card-background-color, var(--ha-card-background, #fff));
       color: var(--primary-text-color);
       box-shadow: var(--ha-card-box-shadow, 0 2px 6px rgba(0,0,0,.25));
@@ -115,7 +118,7 @@ export class UrcSourceMenu extends LitElement {
       display: none;
       z-index: 1000;
     }
-    .urc-menu[open] { display: block; }
+    .urc-menu[open] { display: grid; }
     .urc-item {
       display: block;
       width: 100%;

@@ -35,6 +35,7 @@ import './classes/remote-dialog';
 import { RemoteDialog } from './classes/remote-dialog';
 import './classes/remote-slider';
 import './classes/remote-touchpad';
+import './components/urc-source-menu';
 import {
 	AUTOFILL,
 	DOUBLE_TAP_WINDOW,
@@ -475,6 +476,17 @@ class UniversalRemoteCard extends LitElement {
 		></remote-circlepad>`;
 	}
 
+	buildSource(elementName: string, actions: IButtonConfig): TemplateResult {
+		const entity = (
+			actions.entity_id ?? this.config.media_player_id ?? this.config.remote_id
+		) as string;
+		return html`<urc-source-menu
+			id="${elementName}"
+			.hass=${this.hass}
+			.entity=${entity}
+		></urc-source-menu>`;
+	}
+
 	buildVolumeButtons(): TemplateResult[] {
 		return [
 			this.buildButton('volume_down', this.getElementConfig('volume_down')),
@@ -604,20 +616,28 @@ class UniversalRemoteCard extends LitElement {
 						break;
 					default: {
 						const actions = this.getElementConfig(elementName);
-						switch (actions.type) {
-							case 'slider':
-								rowContent.push(this.buildSlider(elementName, actions));
-								break;
-							case 'touchpad':
-								rowContent.push(this.buildTouchpad(elementName, actions));
-								break;
-							case 'circlepad':
-								rowContent.push(this.buildCirclepad(elementName, actions));
-								break;
-							case 'button':
-							default:
-								rowContent.push(this.buildButton(elementName, actions));
-								break;
+						// If the configured action is a source selector, render the source menu
+						if (
+							(actions as any).tap_action?.action === 'source' ||
+							(actions as any).type === 'source'
+						) {
+							rowContent.push(this.buildSource(elementName, actions as IButtonConfig));
+						} else {
+							switch (actions.type) {
+								case 'slider':
+									rowContent.push(this.buildSlider(elementName, actions));
+									break;
+								case 'touchpad':
+									rowContent.push(this.buildTouchpad(elementName, actions));
+									break;
+								case 'circlepad':
+									rowContent.push(this.buildCirclepad(elementName, actions));
+									break;
+								case 'button':
+								default:
+									rowContent.push(this.buildButton(elementName, actions));
+									break;
+							}
 						}
 						break;
 					}

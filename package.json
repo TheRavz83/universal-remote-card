@@ -6,7 +6,7 @@
 	"type": "module",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "npx rspack && gzip -fk dist/universal-remote-card.min.js",
+		"build": "npx rspack && node -e \"const fs=require('fs'); const zlib=require('zlib'); const input='dist/universal-remote-card.min.js'; const output='dist/universal-remote-card.min.js.gz'; fs.copyFileSync(input, output); const gz=zlib.gzipSync(fs.readFileSync(input)); fs.writeFileSync(output, gz);\"",
 		"prelint": "tsc --noemit",
 		"lint": "eslint --fix --config ./eslint.config.js",
 		"build-css": "tcm src",

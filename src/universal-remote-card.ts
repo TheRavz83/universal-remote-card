@@ -949,7 +949,7 @@ class UniversalRemoteCard extends LitElement {
 				width: 100%;
 				max-width: 360px;
 				background: var(--secondary-background-color, #1f1f1f);
-				border: 1px solid rgba(255, 255, 255, 0.08);
+				border: none;
 				border-radius: 18px;
 				box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
 				display: grid;
@@ -1030,9 +1030,9 @@ class UniversalRemoteCard extends LitElement {
 				min-height: 44px;
 				box-sizing: border-box;
 				padding: 0 40px 0 14px;
-				border: 1px solid rgba(255, 255, 255, 0.12);
+				border: none;
 				border-radius: 14px;
-				background: rgba(255, 255, 255, 0.05);
+				background: rgba(255, 255, 255, 0.06);
 				color: var(--primary-text-color, #fff);
 				font: inherit;
 				outline: none;

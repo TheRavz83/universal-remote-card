@@ -47,6 +47,7 @@ export class UrcSourceMenu extends LitElement {
         entity_id: this.entity,
         source,
       });
+      this.currentSource = source;
     } catch (e) {
       console.error('Failed to select source', e);
     }

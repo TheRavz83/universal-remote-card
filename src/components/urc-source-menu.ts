@@ -79,12 +79,19 @@ export class UrcSourceMenu extends LitElement {
   }
 
   static styles = css`
-    :host { display: block; }
+    :host { display: inline-block; }
+    .urc-dropdown {
+      position: relative;
+      display: inline-flex;
+      width: auto;
+      min-width: 120px;
+    }
     .urc-button {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      width: 100%;
+      width: auto;
+      min-width: 120px;
       padding: 8px 12px;
       border-radius: 10px;
       border: 1px solid rgba(255,255,255,0.08);
@@ -95,9 +102,10 @@ export class UrcSourceMenu extends LitElement {
     }
     .urc-menu {
       position: absolute;
-      right: 0;
+      left: 0;
       top: calc(100% + 6px);
-      min-width: 140px;
+      min-width: 100%;
+      width: auto;
       max-width: 320px;
       background: var(--card-background-color, var(--ha-card-background, #fff));
       color: var(--primary-text-color);
@@ -109,6 +117,7 @@ export class UrcSourceMenu extends LitElement {
     }
     .urc-menu[open] { display: block; }
     .urc-item {
+      display: block;
       width: 100%;
       background: transparent;
       border: 0;
@@ -116,6 +125,7 @@ export class UrcSourceMenu extends LitElement {
       padding: 8px 10px;
       border-radius: 6px;
       cursor: pointer;
+      white-space: normal;
     }
     .urc-item[selected], .urc-item:hover { background: rgba(127,127,127,0.12); }
   `;
